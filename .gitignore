@@ -1,0 +1,22 @@
+# Secrets — NEVER commit
+.env
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# DB backups and uploaded attachments
+data/tickets.db.bak*
+data/attachments/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
