@@ -1,7 +1,17 @@
 """Support_Iatriko — Streamlit dashboard for Magenta Insurance group health tickets."""
+import os
 from pathlib import Path
 
 import streamlit as st
+
+# Promote Streamlit Cloud secrets to env vars so db.py / ai.py pick them up
+# via os.getenv — same code path as local .env development.
+for _k in ("GOOGLE_API_KEY", "TURSO_DATABASE_URL", "TURSO_AUTH_TOKEN"):
+    try:
+        if _k in st.secrets and not os.getenv(_k):
+            os.environ[_k] = str(st.secrets[_k])
+    except Exception:
+        break
 
 import ai
 import db

@@ -1,9 +1,14 @@
+import os
 import sqlite3
 from contextlib import contextmanager
 from datetime import datetime
 from typing import Any
 
 from config import DB_PATH
+
+TURSO_URL = os.getenv("TURSO_DATABASE_URL", "").strip()
+TURSO_TOKEN = os.getenv("TURSO_AUTH_TOKEN", "").strip()
+USE_TURSO = bool(TURSO_URL and TURSO_TOKEN)
 
 
 SCHEMA = """
@@ -63,11 +68,19 @@ CREATE TABLE IF NOT EXISTS response_templates (
 """
 
 
-@contextmanager
-def conn():
+def _open():
+    if USE_TURSO:
+        from turso_adapter import TursoConnection
+        return TursoConnection(TURSO_URL, TURSO_TOKEN)
     c = sqlite3.connect(DB_PATH)
     c.row_factory = sqlite3.Row
     c.execute("PRAGMA foreign_keys = ON")
+    return c
+
+
+@contextmanager
+def conn():
+    c = _open()
     try:
         yield c
         c.commit()
